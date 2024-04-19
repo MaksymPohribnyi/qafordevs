@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import net.proselyte.qafordevs.entity.DeveloperEntity;
 import net.proselyte.qafordevs.entity.Status;
@@ -11,6 +13,7 @@ import net.proselyte.qafordevs.exception.DeveloperNotFoundException;
 import net.proselyte.qafordevs.exception.DeveloperWithDuplicateEmailException;
 import net.proselyte.qafordevs.repository.DeveloperRepository;
 
+@Service
 @RequiredArgsConstructor
 public class DeveloperServiceImpl implements DeveloperService {
 
