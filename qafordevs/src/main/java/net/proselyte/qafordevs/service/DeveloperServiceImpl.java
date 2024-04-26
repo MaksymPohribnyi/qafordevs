@@ -23,8 +23,9 @@ public class DeveloperServiceImpl implements DeveloperService {
 	public DeveloperEntity saveDeveloper(DeveloperEntity developer) {
 		DeveloperEntity duplicateCandidate = developerRepository.findByEmail(developer.getEmail());
 		if (Objects.nonNull(duplicateCandidate)) {
-			throw new DeveloperWithDuplicateEmailException("Developer with defined email is already exist");
+			throw new DeveloperWithDuplicateEmailException("Developer with defined email is already exists");
 		}
+		developer.setStatus(Status.ACTIVE);
 		return developerRepository.save(developer);
 	}
 
@@ -32,7 +33,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	public DeveloperEntity updateDeveloper(DeveloperEntity developer) {
 		boolean isExists = developerRepository.existsById(developer.getId());
 		if (!isExists) {
-			throw new DeveloperNotFoundException("Developer not found");
+			throw new DeveloperNotFoundException("Developer not found by defined id");
 		}
 		return developerRepository.save(developer);
 	}
