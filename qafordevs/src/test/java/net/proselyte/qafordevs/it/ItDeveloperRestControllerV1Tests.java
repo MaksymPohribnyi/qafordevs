@@ -1,21 +1,15 @@
 package net.proselyte.qafordevs.it;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,22 +17,21 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.proselyte.qafordevs.dto.DeveloperDTO;
 import net.proselyte.qafordevs.entity.DeveloperEntity;
 import net.proselyte.qafordevs.entity.Status;
-import net.proselyte.qafordevs.exception.DeveloperNotFoundException;
-import net.proselyte.qafordevs.exception.DeveloperWithDuplicateEmailException;
 import net.proselyte.qafordevs.repository.DeveloperRepository;
-import net.proselyte.qafordevs.service.DeveloperService;
 import net.proselyte.qafordevs.utils.DataUtils;
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@Testcontainers
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ItDeveloperRestControllerV1Tests {
+public class ItDeveloperRestControllerV1Tests extends AbstractRestContollerBaseTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -59,8 +52,6 @@ public class ItDeveloperRestControllerV1Tests {
 	public void givenDeveloperDTO_whenCreateDeveloper_thenSuccesRespoonse() throws Exception {
 		// given
 		DeveloperDTO developerDTO = DataUtils.getDTOJohnDoeTransient();
-//		DeveloperEntity developerEntity = DataUtils.getJohnDoePersisted();
-//		BDDMockito.given(developerRepository.save(any(DeveloperEntity.class))).willReturn(developerEntity);
 		// when
 		ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/developers")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -96,11 +87,11 @@ public class ItDeveloperRestControllerV1Tests {
 	public void givenDeveloperDTO_whenUpdateDeveloper_thenSuccesRespoonse() throws Exception {
 		// given
 		String updatedEmail = "updatedEmail@mail.com";
-		DeveloperDTO developerDTO = DataUtils.getDTOJohnDoePersisted();
-		developerDTO.setEmail(updatedEmail);
-		DeveloperEntity developerEntity = DataUtils.getJohnDoePersisted();
+		DeveloperEntity developerEntity = DataUtils.getJohnDoeTransient();
 		developerRepository.save(developerEntity);
-		// when
+		DeveloperDTO developerDTO = DataUtils.getDTOJohnDoeTransient();
+		developerDTO.setEmail(updatedEmail);
+		developerDTO.setId(developerEntity.getId());
 		ResultActions result = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/developers")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(developerDTO)));
